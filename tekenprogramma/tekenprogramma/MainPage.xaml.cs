@@ -23,10 +23,6 @@ namespace tekenprogramma
         History history = History.GetInstance();
         string tool;
         List<Button> buttons = new List<Button>();
-        Shiftable time = new Time();
-        Timeshift forward;
-        Timeshift backward;
-        Shift shift;
         StorageFolder savefolder;
         Brush buttoncolor;
         Windows.UI.Input.PointerPoint dragStart = null;
@@ -38,9 +34,6 @@ namespace tekenprogramma
             InitializeComponent();
             buttoncolor = Move.Background;
             history.timeline.Add(new Snapshot(group.Copy(), itemcount));
-            forward = new Forward(time);
-            backward = new Backward(time);
-            shift = new Shift(forward, backward);
             buttons.Add(Move);
             buttons.Add(Ellipse);
             buttons.Add(Rectangle);
@@ -110,7 +103,7 @@ namespace tekenprogramma
         {
             if (tool == "Move" && dragStart != null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
-                shift.Backward();
+                timeindex--; ;
                 Update(false);
                 var p2 = e.GetCurrentPoint(paintSurface);
                 foreach(int tag in selected)
@@ -223,7 +216,7 @@ namespace tekenprogramma
             anchor = -1;
             if(timeindex > 0)
             {
-                shift.Backward();
+                timeindex--;
                 Update(false);
             }
         }
@@ -235,7 +228,7 @@ namespace tekenprogramma
             anchor = -1;
             if(history.timeline.Count - 1 > timeindex)
             {
-                shift.Forward();
+                timeindex++;
                 Update(false);
             }
         }
@@ -286,7 +279,7 @@ namespace tekenprogramma
             //true means that an actual change has been made and needs to be stored in the history
             if (change)
             {
-                shift.Forward();
+                timeindex++; ;
                 if (history.timeline.Count >= timeindex)
                 {
                     history.timeline.RemoveRange(timeindex, history.timeline.Count - timeindex);
