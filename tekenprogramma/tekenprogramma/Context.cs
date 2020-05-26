@@ -4,29 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Media;
 
 namespace tekenprogramma
 {
     class Context
     {
-        private IDrawShape _strategy;
+        private Strategy strategy;
+        public double x, y, height, width = 0;
+        public int id = 0;
 
-        public Context() { }
-
-        public Context(IDrawShape strategy)
+        public Context(Strategy strategy)
         {
-            this._strategy = strategy;
+            this.strategy = strategy;
         }
 
-        public void SetStrategy(IDrawShape strategy)
+        public Shape Draw()
         {
-            this._strategy = strategy;
-        }
-
-        public Shape Draw(Shape s, List<int> selected, Composite comp, Composite group)
-        {
-            Shape shape = this._strategy.DrawShape(s, selected, comp, group);
-
+            Shape shape = strategy.DrawShape(x, y, height, width, id);
             return shape;
         }
     }

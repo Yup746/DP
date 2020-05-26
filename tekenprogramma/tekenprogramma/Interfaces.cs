@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Media;
+
 
 namespace tekenprogramma
 {
@@ -19,8 +21,8 @@ namespace tekenprogramma
         void visit(Composite composite);
     }
 
-    public interface IDrawShape
+    public interface Strategy
     {
-        Shape DrawShape(Shape s, List<int> selected, Composite comp, Composite group);
+        Shape DrawShape(double x, double y, double height, double width, int id);
     }
 }

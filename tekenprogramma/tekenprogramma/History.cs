@@ -9,18 +9,11 @@ namespace tekenprogramma
     //History singleton which holds all the changes to be able to undo and redo
     class History
     {
-        private static readonly History Instance = new History();
         public List<Snapshot> timeline;
 
-        private History() { }
-
-        public static History GetInstance()
+        public History()
         {
-            if (Instance.timeline == null)
-            {
-                Instance.timeline = new List<Snapshot>();
-            }
-            return Instance;
+            timeline = new List<Snapshot>();
         }
     }
 }

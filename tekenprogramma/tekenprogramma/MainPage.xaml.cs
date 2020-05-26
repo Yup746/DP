@@ -20,7 +20,7 @@ namespace tekenprogramma
         List<int> selected = new List<int>();
         public static int timeindex = 0;
         Composite group = new Composite(0, "Group");
-        History history = History.GetInstance();
+        History history = new History();
         string tool;
         List<Button> buttons = new List<Button>();
         StorageFolder savefolder;
@@ -28,7 +28,6 @@ namespace tekenprogramma
         Windows.UI.Input.PointerPoint dragStart = null;
         int anchor = -1;
         ActionManager actionmanager = new ActionManager();
-        Context drawStrategy = new Context();
 
         public MainPage()
         {
@@ -295,34 +294,52 @@ namespace tekenprogramma
                 List<Composite> tosurface = history.timeline[timeindex].composite.Concatenate();
                 foreach (Composite c in tosurface)
                 {
-                    if(c.type == "Rectangle")
-                    {
-                        drawStrategy.SetStrategy(new DrawRectangle());
-                        Shape rect = drawStrategy.Draw(new Rectangle(), selected, c, group);
-                        
-                        Canvas.SetLeft(rect, c.x);
-                        Canvas.SetTop(rect, c.y);
-                        rect.PointerPressed += mouseDown;
-                        rect.PointerMoved += mouseMove;
-                        rect.PointerReleased += mouseUp;
-                        rect.PointerWheelChanged += mouseScroll;
-                        paintSurface.Children.Add(rect);
-                    }
-                    else if(c.type == "Ellipse")
-                    {
-                        drawStrategy.SetStrategy(new DrawEllipse());
-                        Shape ellipse = drawStrategy.Draw(new Ellipse(), selected, c, group);
-
-                        Canvas.SetLeft(ellipse, c.x);
-                        Canvas.SetTop(ellipse, c.y);
-                        ellipse.PointerPressed += mouseDown;
-                        ellipse.PointerMoved += mouseMove;
-                        ellipse.PointerReleased += mouseUp;
-                        ellipse.PointerWheelChanged += mouseScroll;
-                        paintSurface.Children.Add(ellipse);
-                    }
+                    Context context = new Context(DrawRectangle.getInstance());
+                    if(c.type == "Ellipse")
+                        context = new Context(DrawEllipse.getInstance());
+                    context.x = c.x;
+                    context.y = c.y;
+                    context.height = c.height;
+                    context.width = c.width;
+                    context.id = c.id;
+                    Shape shape = context.Draw();
+                    SolidColorBrush brush = new SolidColorBrush();
+                    if (IsSelected(c))
+                        brush.Color = Colors.DarkSlateGray;
+                    else
+                        brush.Color = Colors.SlateGray;
+                    shape.Fill = brush;
+                    shape.PointerPressed += mouseDown;
+                    shape.PointerMoved += mouseMove;
+                    shape.PointerReleased += mouseUp;
+                    shape.PointerWheelChanged += mouseScroll;
+                    paintSurface.Children.Add(shape);
                 }
             }
+        }
+
+        //Checks if composite object is selected
+        public bool IsSelected(Composite c)
+        {
+            bool isselected = false;
+            Composite tmp = c;
+            if (selected.Contains(c.id))
+                isselected = true;
+            else
+            {
+                while (tmp.id != 0 && selected.Count > 0)
+                {
+                    int parent = group.Findparent(tmp.id);
+                    if (selected.Contains(parent))
+                    {
+                        isselected = true;
+                        break;
+                    }
+                    else
+                        tmp = group.FindID(parent);
+                }
+            }
+            return isselected;
         }
         
         //Selects the select tool

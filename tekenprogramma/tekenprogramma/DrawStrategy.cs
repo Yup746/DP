@@ -6,76 +6,57 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
+using Windows.UI.Xaml.Controls;
 
 namespace tekenprogramma
 {
-    class DrawEllipse : IDrawShape
+    class DrawEllipse : Strategy
     {
-        public Shape DrawShape(Shape s, List<int> selected, Composite comp, Composite group)
+        private static DrawEllipse instance = new DrawEllipse();
+
+        private DrawEllipse() { }
+
+        public static DrawEllipse getInstance()
         {
-            Shape shape = s;
+            return instance;
+        }
 
-            shape.Height = comp.height;
-            shape.Width = comp.width;
-            SolidColorBrush brush = new SolidColorBrush();
-            Composite tmp = comp;
-            if (selected.Contains(comp.id))
-                brush.Color = Colors.DarkSlateGray;
-            else
-            {
-                brush.Color = Colors.SlateGray;
-                while (tmp.id != 0 && selected.Count > 0)
-                {
-                    int parent = group.Findparent(tmp.id);
-                    if (selected.Contains(parent))
-                    {
-                        brush.Color = Colors.DarkSlateGray;
-                        break;
-                    }
-                    else
-                        tmp = group.FindID(parent);
-                }
-            }
-            shape.Fill = brush;
-            shape.Name = "Ellipse";
-            shape.Tag = comp.id;
+        public Shape DrawShape(double x, double y, double height, double width, int id)
+        {
+            Ellipse ellipse = new Ellipse();
 
-            return shape;
+            ellipse.Height = height;
+            ellipse.Width = width;
+            ellipse.Name = "Ellipse";
+            ellipse.Tag = id;
+            Canvas.SetLeft(ellipse, x);
+            Canvas.SetTop(ellipse, y);
+            return ellipse;
         }
     }
 
-    class DrawRectangle : IDrawShape
+    class DrawRectangle : Strategy
     {
-        public Shape DrawShape(Shape s, List<int> selected, Composite comp, Composite group)
+        private static DrawRectangle instance = new DrawRectangle();
+
+        private DrawRectangle() { }
+
+        public static DrawRectangle getInstance()
         {
-            Shape shape = s;
+            return instance;
+        }
 
-            shape.Height = comp.height;
-            shape.Width = comp.width;
-            SolidColorBrush brush = new SolidColorBrush();
-            Composite tmp = comp;
-            if (selected.Contains(comp.id))
-                brush.Color = Colors.DarkSlateGray;
-            else
-            {
-                brush.Color = Colors.SlateGray;
-                while (tmp.id != 0 && selected.Count > 0)
-                {
-                    int parent = group.Findparent(tmp.id);
-                    if (selected.Contains(parent))
-                    {
-                        brush.Color = Colors.DarkSlateGray;
-                        break;
-                    }
-                    else
-                        tmp = group.FindID(parent);
-                }
-            }
-            shape.Fill = brush;
-            shape.Name = "Rectangle";
-            shape.Tag = comp.id;
+        public Shape DrawShape(double x, double y, double height, double width, int id)
+        {
+            Rectangle rectangle = new Rectangle();
 
-            return shape;
+            rectangle.Height = height;
+            rectangle.Width = width;
+            rectangle.Name = "Rectangle";
+            rectangle.Tag = id;
+            Canvas.SetLeft(rectangle, x);
+            Canvas.SetTop(rectangle, y);
+            return rectangle;
         }
     }
 }
