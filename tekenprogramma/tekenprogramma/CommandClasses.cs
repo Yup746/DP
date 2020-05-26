@@ -7,6 +7,7 @@ using Windows.Storage.Streams;
 
 namespace tekenprogramma
 {
+    //The ActionManager is the broker class and handles Actions aka Orders
     public class ActionManager
     {
         private List<Action> actionlist = new List<Action>();
@@ -26,6 +27,7 @@ namespace tekenprogramma
         }
     }
 
+    //Resize is a concrete action/order
     public class Resize : Action
     {
         private Composite composite;
@@ -46,6 +48,7 @@ namespace tekenprogramma
         }
     }
 
+    //Move is a concrete action/order
     public class Move : Action
     {
         private Composite composite;
@@ -66,6 +69,7 @@ namespace tekenprogramma
         }
     }
 
+    //Load is a concrete action/order
     public class Load : Action
     {
         private Composite composite;
@@ -83,6 +87,7 @@ namespace tekenprogramma
         }
     }
 
+    //Save is a concrete action/order
     public class Save : Action
     {
         private Composite composite;
@@ -99,10 +104,10 @@ namespace tekenprogramma
         public void Execute()
         {
             composite.Accept(new SaveVisitor(write, depth));
-            //composite.Savetofile(write, depth);
         }
     }
 
+    //Remove is a concrete action/order
     public class Remove : Action
     {
         private Composite composite;
@@ -120,6 +125,7 @@ namespace tekenprogramma
         }
     }
 
+    //Replace is a concrete action/order
     public class Replace : Action
     {
         private Composite composite;
@@ -139,6 +145,7 @@ namespace tekenprogramma
         }
     }
 
+    //Add is a concrete action/order
     public class Add : Action
     {
         private Composite composite;

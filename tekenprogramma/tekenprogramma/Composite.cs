@@ -33,17 +33,19 @@ namespace tekenprogramma
             groupitems = new List<Composite>();
         }
 
+        //Adds a composite object onderneath this one
         public void Add(Composite newcomposite)
         {
             groupitems.Add(newcomposite);
         }
 
+        //Accept method for visitor pattern
         public void Accept(Visitor visitor)
         {
             visitor.visit(this);
         }
 
-        //Find a group or shape by it's id
+        //Find a composite object by it's id and return it
         public Composite FindID(int id)
         {
             if (this.id == id)
@@ -66,7 +68,7 @@ namespace tekenprogramma
             return new Composite(746, "Placeholder");
         }
 
-        //Set Replace a group or shape by it's id
+        //Replace a composite object by it's id
         public void SetID(Composite replacement, int id)
         {
             if (this.id == id)
@@ -120,7 +122,7 @@ namespace tekenprogramma
             return list;
         }
 
-        //Make a copy of this object, because it's reference type
+        //Make a copy of this object, usefull for making the history, since it is a reference type and can't be used otherwise
         public Composite Copy()
         {
             Composite tmp = new Composite(this.id, this.type);
@@ -135,17 +137,7 @@ namespace tekenprogramma
             return tmp;
         }
 
-        //Count the shapes for save purposes
-        public int Countfigures()
-        {
-            int c = 0;
-            foreach(Composite a in groupitems)
-            {
-                c++;
-            }
-            return c;
-        }
-
+        //Returns the id of the parent of a composite by id
         public int Findparent(int tag)
         {
             int temptag = -1;
@@ -171,7 +163,7 @@ namespace tekenprogramma
 
             if (type == "Group")
             {
-                write.WriteString(type + " " + Countfigures() + "\n");
+                write.WriteString(type + " " + groupitems.Count + "\n");
                 foreach (Composite c in groupitems)
                 {
                     c.Savetofile(write, depth + 1);
@@ -226,13 +218,10 @@ namespace tekenprogramma
                 {
                     return;
                 }
-                /*if (lines.Count > 0)
-                {
-                    lines.RemoveAt(0);
-                }*/
             }
         }
 
+        //Recursively changes size, works for shapes, but is mainly handy for groups
         public void RChangeSize(double newheight, double newwidth)
         {
             if(type != "Group")
@@ -249,6 +238,7 @@ namespace tekenprogramma
             }
         }
 
+        //Recursively changes position, works for shapes, but is mainly handy for groups
         public void RMove(double movex, double movey)
         {
             if (type != "Group")

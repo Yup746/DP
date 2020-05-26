@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace tekenprogramma
 {
-    //A snapshot that can be saved in a history list
+    //A snapshot of the drawing that can be saved in a history list
     public struct Snapshot
     {
         public Composite composite;

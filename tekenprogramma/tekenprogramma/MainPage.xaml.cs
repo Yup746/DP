@@ -31,7 +31,7 @@ namespace tekenprogramma
 
         public MainPage()
         {
-            //Initializing program and Command DP
+            //Initializing program and fills a few necessary variables
             InitializeComponent();
             buttoncolor = Move.Background;
             history.timeline.Add(new Snapshot(group.Copy(), itemcount));
@@ -45,13 +45,13 @@ namespace tekenprogramma
         //Anything on the paint surface gets pressed, even the drawings already there
         private void mouseDown(object sender, PointerRoutedEventArgs e)
         {
-            //If the moving button has been pressed, this part moves the drawing
+            //If the move tool is selected, this part (initializes and) moves the selected shapes or group
             if (tool == "Move" && ((FrameworkElement)sender).Name == paintSurface.Name)
             {
                 dragStart = e.GetCurrentPoint(paintSurface);
                 Update(true);
             }
-            //If the group button has been pressed, this part lists all shapes that are being selected
+            //If the select tool is selected, this part will select or unselect any shape or group
             else if(tool == "Select" && ((FrameworkElement)sender).Name != paintSurface.Name)
             {
                 lptag = Convert.ToInt32((e.OriginalSource as FrameworkElement).Tag);
@@ -78,7 +78,7 @@ namespace tekenprogramma
                     anchor = selected[0];
                 Update(false);
             }
-            //This part handles the first and second set of coordinates respectively to draw new shapes
+            //This part initiates the drawing of a shape
             else if(tool == "Rectangle" || tool == "Ellipse")
             {
                 itemcount++;
@@ -96,29 +96,17 @@ namespace tekenprogramma
             }
         }
 
+        //If the mouse button is released and a move action was being executed, then this cleans up after itself
         private void mouseUp(object sender, PointerRoutedEventArgs e) {
             if (tool == "Move")
             {
-                /*var element = (UIElement)sender;
-                element.ReleasePointerCapture(e.Pointer);
-
-                lptag = Convert.ToInt32(((FrameworkElement)sender).Tag);
-                Composite newcomposite = group.FindID(lptag).Copy();
-                newcomposite.x = e.GetCurrentPoint(paintSurface).Position.X - dragStart.Position.X;
-                newcomposite.y = e.GetCurrentPoint(paintSurface).Position.Y - dragStart.Position.Y;
-                group.SetID(newcomposite, lptag);
-                Update(true);
-                Update(false);*/
                 dragStart = null;
             }
-            /*else if(tool == "Rectangle" || tool == "Ellipse")
-            {
-                Update(true);
-            }*/
         }
 
         private void mouseMove(object sender, PointerRoutedEventArgs e)
         {
+            //If the move tool is selected, this makes it possible to drag a selection
             if (tool == "Move" && dragStart != null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
                 timeindex--; ;
@@ -135,10 +123,8 @@ namespace tekenprogramma
                 actionmanager.executeActions();
                 Update(true);
                 Update(false);
-                //ROrnament.PlaceholderText = timeindex.ToString();
-                //Canvas.SetLeft(element, p2.Position.X - dragStart.Position.X);
-                //Canvas.SetTop(element, p2.Position.Y - dragStart.Position.Y);
             }
+            //If the rectangle or ellipse tool is selected, then this creates the shape
             else if((tool == "Rectangle" || tool == "Ellipse") && dragStart != null && e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
                 Undo_Click(sender, e);
@@ -156,6 +142,7 @@ namespace tekenprogramma
             }
         }
 
+        //If a single shape is selected, then scrolling the mouse will select groups higher up and then down again if scrolled the other way
         private void mouseScroll(object sender, PointerRoutedEventArgs e)
         {
             if (selected.Count == 1)
@@ -187,16 +174,15 @@ namespace tekenprogramma
                     }
                 }
             }
-              //  if(e.GetCurrentPoint(paintSurface).Properties.MouseWheelDelta >= 0)
         }
 
-        //This button activates the posibility in Main to move a shape
+        //This button selects the move tool
         private void Move_Click(object sender, RoutedEventArgs e)
         {
             Selectbutton(Move);
         }
 
-        //This button resizes the last pressed shape according to the entered text in the text boxes
+        //This button resizes the selected shapes or group according to what is entered in the text boxes
         private void Resize_Click(object sender, RoutedEventArgs e)
         {
             if (RHeight.Text != "" && RWidth.Text != "")
@@ -215,7 +201,7 @@ namespace tekenprogramma
             }
         }
 
-        //This part mekes it either possible to select groupable shapes in main or groups them if there's already a selection made
+        //When havind groups and/or shapes selected, this button adds them to a group
         private void Group_Click(object sender, RoutedEventArgs e)
         {
             if (selected.Count != 0)
@@ -240,7 +226,7 @@ namespace tekenprogramma
             }
         }
 
-        //This activates the undo command
+        //This goes one step back
         private void Undo_Click(object sender, RoutedEventArgs e)
         {
             selected.Clear();
@@ -252,7 +238,7 @@ namespace tekenprogramma
             }
         }
 
-        //This activates the redo command pattern
+        //This goes one step forward
         private void Redo_Click(object sender, RoutedEventArgs e)
         {
             selected.Clear();
@@ -262,20 +248,6 @@ namespace tekenprogramma
                 timeindex++;
                 Update(false);
             }
-        }
-
-        //This finds an element by it's id from the paintsurface and returns it
-        public FrameworkElement ElementbyTag(int tag)
-        {
-            foreach(FrameworkElement c in paintSurface.Children)
-            {
-                FrameworkElement tmp = c;
-                if(Convert.ToInt32(tmp.Tag) == tag)
-                {
-                    return tmp;
-                }
-            }
-            return paintSurface;
         }
 
         //This returns the smalles double from the 2 inputs
@@ -288,19 +260,19 @@ namespace tekenprogramma
         }
 
 
-        //This changes the to-be type to an Ellipse
+        //This changes the tool to an Ellipse
         private void Ellipse_Click(object sender, RoutedEventArgs e)
         {
             Selectbutton(Ellipse);
         }
 
-        //This changes the to-be type to a Rectangle
+        //This changes the tool to a Rectangle
         private void Rectangle_Click(object sender, RoutedEventArgs e)
         {
             Selectbutton(Rectangle);
         }
 
-        //Update after timeshift or changes made
+        //Update after undo/redo or changes made
         public void Update(bool change)
         {
             //true means that an actual change has been made and needs to be stored in the history
@@ -313,9 +285,9 @@ namespace tekenprogramma
                 }
                 history.timeline.Add(new Snapshot(group.Copy(), itemcount));
             }
+            //false means that the history needs to be read and written to the paintsurface
             else
             {
-                //false means that the history needs to be read and written to the paintsurface
                 group = history.timeline[timeindex].composite.Copy();
                 itemcount = history.timeline[timeindex].itemcount;
                 paintSurface.Children.Clear();
@@ -396,12 +368,13 @@ namespace tekenprogramma
             }
         }
         
+        //Selects the select tool
         private void Select_Click(object sender, RoutedEventArgs e)
         {
             Selectbutton(Select);
         }
 
-        //Doesn't work yet, but I use it to break the program for debugging
+        //Adds the ornament to the group or shape
         private void Ornament_Click(object sender, RoutedEventArgs e)
         {
             
@@ -435,7 +408,7 @@ namespace tekenprogramma
             await writer.StoreAsync();
         }
 
-        //Loads the shapes from a file
+        //Loads the shapes and groups from a file
         private async void Load_Click(object sender, RoutedEventArgs e)
         {
             var picker = new Windows.Storage.Pickers.FolderPicker();
@@ -465,6 +438,7 @@ namespace tekenprogramma
             Update(false);
         }
 
+        //Selects a specific tool
         private void Selectbutton(Button button)
         {
             foreach (Button b in buttons){

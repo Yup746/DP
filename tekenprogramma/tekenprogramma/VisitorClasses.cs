@@ -7,6 +7,7 @@ using Windows.Storage.Streams;
 
 namespace tekenprogramma
 {
+    //Move visitor class that changes the position of composite objects recursively
     class MoveVisitor : Visitor
     {
         private double x;
@@ -23,6 +24,7 @@ namespace tekenprogramma
         }
     }
 
+    //Resize visitor class that changes the size of composite objects recursively
     class ResizeVisitor : Visitor
     {
         private double height;
@@ -39,6 +41,7 @@ namespace tekenprogramma
         }
     }
 
+    //Save visitor class that calls the method to save to a file recursively
     class SaveVisitor : Visitor
     {
         private DataWriter write;

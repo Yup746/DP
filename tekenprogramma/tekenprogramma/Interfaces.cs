@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace tekenprogramma
 {
+    //Action/order interface
     public interface Action
     {
         void Execute();
     }
 
+    //Visitor interface
     public interface Visitor
     {
         void visit(Composite composite);

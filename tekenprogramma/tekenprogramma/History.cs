@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace tekenprogramma
 {
-    //History singleton
+    //History singleton which holds all the changes to be able to undo and redo
     class History
     {
         private static readonly History Instance = new History();
