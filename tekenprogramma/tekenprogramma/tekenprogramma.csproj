@@ -119,7 +119,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CommandClasses.cs" />
     <Compile Include="History.cs" />
+    <Compile Include="Interfaces.cs" />
     <Compile Include="Snapshot.cs" />
     <Compile Include="Composite.cs" />
     <Compile Include="MainPage.xaml.cs">

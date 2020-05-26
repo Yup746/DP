@@ -33,35 +33,9 @@ namespace tekenprogramma
             groupitems = new List<Composite>();
         }
 
-        //Adds a new group or shape to the group
-        public void Add(Composite newComposite)
+        public void Add(Composite newcomposite)
         {
-            groupitems.Add(newComposite);
-        }
-
-        //Sets the shape dimensions
-        public void ShapeDimensions(double height, double width, double x, double y)
-        {
-            this.height = height;
-            this.width = width;
-            this.x = x;
-            this.y = y;
-        }
-
-        //Makes a rectangle
-        public void MakeRectangle(double x1, double y1, double x2, double y2, int id)
-        {
-            Composite tmp = new Composite(id, "Rectangle");
-            tmp.ShapeDimensions(Math.Abs(y1 - y2), Math.Abs(x1 - x2), MainPage.ReturnSmallest(x1, x2), MainPage.ReturnSmallest(y1, y2));
-            groupitems.Add(tmp);
-        }
-
-        //Makes an Ellipse
-        public void MakeEllipse(double x1, double y1, double x2, double y2, int id)
-        {
-            Composite tmp = new Composite(id, "Ellipse");
-            tmp.ShapeDimensions(Math.Abs(y1 - y2), Math.Abs(x1 - x2), MainPage.ReturnSmallest(x1, x2), MainPage.ReturnSmallest(y1, y2));
-            groupitems.Add(tmp);
+            groupitems.Add(newcomposite);
         }
 
         //Find a group or shape by it's id
@@ -151,7 +125,7 @@ namespace tekenprogramma
             tmp.y = this.y;
             foreach(Composite c in groupitems)
             {
-                tmp.groupitems.Add(c.Copy());
+                tmp.Add(c.Copy());
             }
             return tmp;
         }

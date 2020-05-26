@@ -27,6 +27,7 @@ namespace tekenprogramma
         Brush buttoncolor;
         Windows.UI.Input.PointerPoint dragStart = null;
         int anchor = -1;
+        ActionManager actionmanager = new ActionManager();
 
         public MainPage()
         {
@@ -54,10 +55,25 @@ namespace tekenprogramma
             else if(tool == "Select" && ((FrameworkElement)sender).Name != paintSurface.Name)
             {
                 lptag = Convert.ToInt32((e.OriginalSource as FrameworkElement).Tag);
-                if (!selected.Contains(lptag))
+                bool lptagselected = false;
+                int actualselected = lptag;
+                foreach(int c in selected)
+                {
+                    if (selected.Contains(lptag) || group.FindID(c).FindID(lptag).type != "Placeholder")
+                    {
+                        lptagselected = true;
+                        actualselected = c;
+                    }
+                }
+                if (!lptagselected)
                     selected.Add(lptag);
                 else
-                    selected.Remove(lptag);
+                {
+                    if (selected.Contains(lptag))
+                        selected.Remove(lptag);
+                    else
+                        selected.Remove(actualselected);
+                }
                 if (selected.Count == 1)
                     anchor = selected[0];
                 Update(false);
@@ -72,7 +88,9 @@ namespace tekenprogramma
                 newshape.width = 1;
                 newshape.x = e.GetCurrentPoint(paintSurface).Position.X;
                 newshape.y = e.GetCurrentPoint(paintSurface).Position.Y;
-                group.Add(newshape);
+                Add addAction = new Add(group, newshape);
+                actionmanager.takeAction(addAction);
+                actionmanager.executeActions();
                 Update(true);
                 Update(false);
             }
@@ -109,9 +127,12 @@ namespace tekenprogramma
                 foreach(int tag in selected)
                 {
                     Composite tmp = group.FindID(tag).Copy();
-                    tmp.RMove(p2.Position.X - dragStart.Position.X, p2.Position.Y - dragStart.Position.Y);
-                    group.SetID(tmp, tag);
+                    Move moveAction = new Move(tmp, p2.Position.X - dragStart.Position.X, p2.Position.Y - dragStart.Position.Y);
+                    Replace replaceAction = new Replace(group, tmp, tag);
+                    actionmanager.takeAction(moveAction);
+                    actionmanager.takeAction(replaceAction);
                 }
+                actionmanager.executeActions();
                 Update(true);
                 Update(false);
                 //ROrnament.PlaceholderText = timeindex.ToString();
@@ -127,7 +148,9 @@ namespace tekenprogramma
                 newshape.width = Math.Abs(dragStart.Position.X - e.GetCurrentPoint(paintSurface).Position.X);
                 newshape.x = ReturnSmallest(dragStart.Position.X, e.GetCurrentPoint(paintSurface).Position.X);
                 newshape.y = ReturnSmallest(dragStart.Position.Y, e.GetCurrentPoint(paintSurface).Position.Y);
-                group.Add(newshape);
+                Add addAction = new Add(group, newshape);
+                actionmanager.takeAction(addAction);
+                actionmanager.executeActions();
                 Update(true);
                 Update(false);
             }
@@ -181,8 +204,11 @@ namespace tekenprogramma
                 foreach(int c in selected)
                 {
                     Composite newcomposite = group.FindID(c).Copy();
-                    newcomposite.RChangeSize(Convert.ToDouble(RHeight.Text), Convert.ToDouble(RWidth.Text));
-                    group.SetID(newcomposite, c);
+                    Resize resizeAction = new Resize(newcomposite, Convert.ToDouble(RHeight.Text), Convert.ToDouble(RWidth.Text));
+                    Replace replaceAction = new Replace(group, newcomposite, c);
+                    actionmanager.takeAction(resizeAction);
+                    actionmanager.takeAction(replaceAction);
+                    actionmanager.executeActions();
                 }
                 Update(true);
                 Update(false);
@@ -195,13 +221,18 @@ namespace tekenprogramma
             if (selected.Count != 0)
             {
                 itemcount++;
-                group.Add(new Composite(itemcount, "Group"));
+                Add addActiona = new Add(group, new Composite(itemcount, "Group"));
+                actionmanager.takeAction(addActiona);
+                actionmanager.executeActions();
                 foreach (int c in selected)
                 {
                     Composite tmp = group.FindID(c).Copy();
-                    group.RemoveID(c);
-                    group.groupitems[group.groupitems.Count - 1].Add(tmp);
+                    Remove removeAction = new Remove(group, c);
+                    Add addActionb = new Add(group.groupitems[group.groupitems.Count - 1], tmp);
+                    actionmanager.takeAction(removeAction);
+                    actionmanager.takeAction(addActionb);
                 }
+                actionmanager.executeActions();
                 selected.Clear();
                 anchor = -1;
                 Update(true);
@@ -251,13 +282,9 @@ namespace tekenprogramma
         public static double ReturnSmallest(double first, double last)
         {
             if(first < last)
-            {
                 return first;
-            }
             else
-            {
                 return last;
-            }
         }
 
 
@@ -402,7 +429,9 @@ namespace tekenprogramma
             IRandomAccessStream sw = await savefile.OpenAsync(FileAccessMode.ReadWrite);
 
             DataWriter writer = new DataWriter(sw);
-            group.Savetofile(writer, 0);
+            Save saveAction = new Save(group, writer, 0);
+            actionmanager.takeAction(saveAction);
+            actionmanager.executeActions();
             await writer.StoreAsync();
         }
 
@@ -429,7 +458,9 @@ namespace tekenprogramma
             lines.RemoveAt(lines.Count - 1);
             group.groupitems.Clear();
             itemcount = 1;
-            group.Loadfromfile(lines);
+            Load loadAction = new Load(group, lines);
+            actionmanager.takeAction(loadAction);
+            actionmanager.executeActions();
             Update(true);
             Update(false);
         }
