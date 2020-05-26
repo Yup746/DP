@@ -10,4 +10,9 @@ namespace tekenprogramma
     {
         void Execute();
     }
+
+    public interface Visitor
+    {
+        void visit(Composite composite);
+    }
 }

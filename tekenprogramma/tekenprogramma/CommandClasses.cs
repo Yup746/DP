@@ -41,7 +41,8 @@ namespace tekenprogramma
 
         public void Execute()
         {
-            composite.RChangeSize(newheight, newwidth);
+            composite.Accept(new ResizeVisitor(newheight, newwidth));
+            //composite.RChangeSize(newheight, newwidth);
         }
     }
 
@@ -60,7 +61,8 @@ namespace tekenprogramma
 
         public void Execute()
         {
-            composite.RMove(newx, newy);
+            composite.Accept(new MoveVisitor(newx, newy));
+            //composite.RMove(newx, newy);
         }
     }
 
@@ -96,7 +98,8 @@ namespace tekenprogramma
 
         public void Execute()
         {
-            composite.Savetofile(write, depth);
+            composite.Accept(new SaveVisitor(write, depth));
+            //composite.Savetofile(write, depth);
         }
     }
 

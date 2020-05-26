@@ -38,6 +38,11 @@ namespace tekenprogramma
             groupitems.Add(newcomposite);
         }
 
+        public void Accept(Visitor visitor)
+        {
+            visitor.visit(this);
+        }
+
         //Find a group or shape by it's id
         public Composite FindID(int id)
         {
