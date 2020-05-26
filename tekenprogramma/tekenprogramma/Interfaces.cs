@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Shapes;
 
 namespace tekenprogramma
 {
@@ -16,5 +17,10 @@ namespace tekenprogramma
     public interface Visitor
     {
         void visit(Composite composite);
+    }
+
+    public interface IDrawShape
+    {
+        Shape DrawShape(Shape s, List<int> selected, Composite comp, Composite group);
     }
 }

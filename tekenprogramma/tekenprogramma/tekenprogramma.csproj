@@ -120,6 +120,8 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommandClasses.cs" />
+    <Compile Include="Context.cs" />
+    <Compile Include="DrawStrategy.cs" />
     <Compile Include="History.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Snapshot.cs" />

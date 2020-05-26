@@ -28,6 +28,7 @@ namespace tekenprogramma
         Windows.UI.Input.PointerPoint dragStart = null;
         int anchor = -1;
         ActionManager actionmanager = new ActionManager();
+        Context drawStrategy = new Context();
 
         public MainPage()
         {
@@ -296,73 +297,29 @@ namespace tekenprogramma
                 {
                     if(c.type == "Rectangle")
                     {
-                        Rectangle newRectangle = new Rectangle();
-                        newRectangle.Height = c.height;
-                        newRectangle.Width = c.width;
-                        SolidColorBrush brush = new SolidColorBrush();
-                        Composite tmp = c;
-                        if (selected.Contains(c.id))
-                            brush.Color = Colors.DarkSlateGray;
-                        else
-                        {
-                            brush.Color = Colors.SlateGray;
-                            while (tmp.id != 0 && selected.Count > 0)
-                            {
-                                int parent = group.Findparent(tmp.id);
-                                if (selected.Contains(parent))
-                                {
-                                    brush.Color = Colors.DarkSlateGray;
-                                    break;
-                                }
-                                else
-                                    tmp = group.FindID(parent);
-                            }
-                        }
-                        newRectangle.Fill = brush;
-                        newRectangle.Name = "Rectangle";
-                        newRectangle.Tag = c.id;
-                        Canvas.SetLeft(newRectangle, c.x);
-                        Canvas.SetTop(newRectangle, c.y);
-                        newRectangle.PointerPressed += mouseDown;
-                        newRectangle.PointerMoved += mouseMove;
-                        newRectangle.PointerReleased += mouseUp;
-                        newRectangle.PointerWheelChanged += mouseScroll;
-                        paintSurface.Children.Add(newRectangle);
+                        drawStrategy.SetStrategy(new DrawRectangle());
+                        Shape rect = drawStrategy.Draw(new Rectangle(), selected, c, group);
+                        
+                        Canvas.SetLeft(rect, c.x);
+                        Canvas.SetTop(rect, c.y);
+                        rect.PointerPressed += mouseDown;
+                        rect.PointerMoved += mouseMove;
+                        rect.PointerReleased += mouseUp;
+                        rect.PointerWheelChanged += mouseScroll;
+                        paintSurface.Children.Add(rect);
                     }
                     else if(c.type == "Ellipse")
                     {
-                        Ellipse newEllipse = new Ellipse();
-                        newEllipse.Height = c.height;
-                        newEllipse.Width = c.width;
-                        SolidColorBrush brush = new SolidColorBrush();
-                        Composite tmp = c;
-                        if (selected.Contains(c.id))
-                            brush.Color = Colors.DarkSlateGray;
-                        else
-                        {
-                            brush.Color = Colors.SlateGray;
-                            while (tmp.id != 0 && selected.Count > 0)
-                            {
-                                int parent = group.Findparent(tmp.id);
-                                if (selected.Contains(parent))
-                                {
-                                    brush.Color = Colors.DarkSlateGray;
-                                    break;
-                                }
-                                else
-                                    tmp = group.FindID(parent);
-                            }
-                        }
-                        newEllipse.Fill = brush;
-                        newEllipse.Name = "Ellipse";
-                        newEllipse.Tag = c.id;
-                        Canvas.SetLeft(newEllipse, c.x);
-                        Canvas.SetTop(newEllipse, c.y);
-                        newEllipse.PointerPressed += mouseDown;
-                        newEllipse.PointerMoved += mouseMove;
-                        newEllipse.PointerReleased += mouseUp;
-                        newEllipse.PointerWheelChanged += mouseScroll;
-                        paintSurface.Children.Add(newEllipse);
+                        drawStrategy.SetStrategy(new DrawEllipse());
+                        Shape ellipse = drawStrategy.Draw(new Ellipse(), selected, c, group);
+
+                        Canvas.SetLeft(ellipse, c.x);
+                        Canvas.SetTop(ellipse, c.y);
+                        ellipse.PointerPressed += mouseDown;
+                        ellipse.PointerMoved += mouseMove;
+                        ellipse.PointerReleased += mouseUp;
+                        ellipse.PointerWheelChanged += mouseScroll;
+                        paintSurface.Children.Add(ellipse);
                     }
                 }
             }
