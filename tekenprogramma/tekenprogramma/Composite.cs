@@ -20,6 +20,7 @@ namespace tekenprogramma
         public string type;
         public int id;
         public List<Composite> groupitems;
+        public List<Ornament> ornaments;
 
         public Composite(int id, string type)
         {
@@ -31,6 +32,7 @@ namespace tekenprogramma
             x = 0;
             y = 0;
             groupitems = new List<Composite>();
+            this.ornaments = new List<Ornament>();
         }
 
         //Adds a composite object onderneath this one
@@ -66,6 +68,54 @@ namespace tekenprogramma
                 }
             }
             return new Composite(746, "Placeholder");
+        }
+
+        public XYXY GetGroupXYHW()
+        {
+            XYXY xyhw = new XYXY();
+            foreach(Composite c in groupitems)
+            {
+                if(c.type != "Group")
+                {
+                    if (xyhw.sx != 746746)
+                        xyhw.sx = MainPage.ReturnSmallest(xyhw.sx, c.x);
+                    else
+                        xyhw.sx = c.x;
+                    if (xyhw.sy != 746746)
+                        xyhw.sy = MainPage.ReturnSmallest(xyhw.sy, c.y);
+                    else
+                        xyhw.sy = c.y;
+                    if (xyhw.ex != 746746)
+                        xyhw.ex = MainPage.ReturnLargest(xyhw.ex, c.x + c.width);
+                    else
+                        xyhw.ex = c.x + c.width;
+                    if (xyhw.ey != 746746)
+                        xyhw.ey = MainPage.ReturnLargest(xyhw.ey, c.y + c.height);
+                    else
+                        xyhw.ey = c.y + c.height;
+                }
+                else
+                {
+                    XYXY rxyhw = c.GetGroupXYHW();
+                    if (xyhw.sx != 746746)
+                        xyhw.sx = MainPage.ReturnSmallest(xyhw.sx, c.x);
+                    else
+                        xyhw.sx = c.x;
+                    if (xyhw.sy != 746746)
+                        xyhw.sy = MainPage.ReturnSmallest(xyhw.sy, c.y);
+                    else
+                        xyhw.sy = c.y;
+                    if (xyhw.ex != 746746)
+                        xyhw.ex = MainPage.ReturnLargest(xyhw.ex, c.x + c.width);
+                    else
+                        xyhw.ex = c.x + c.width;
+                    if (xyhw.ey != 746746)
+                        xyhw.ey = MainPage.ReturnLargest(xyhw.ey, c.y + c.height);
+                    else
+                        xyhw.ey = c.y + c.height;
+                }
+            }
+            return xyhw;
         }
 
         //Replace a composite object by it's id
@@ -110,11 +160,8 @@ namespace tekenprogramma
             List<Composite> list = new List<Composite>();
             foreach(Composite c in groupitems)
             {
-                if(c.groupitems.Count == 0)
-                {
-                    list.Add(c);
-                }
-                else
+                list.Add(c);
+                if (c.groupitems.Count != 0)
                 {
                     list.AddRange(c.Concatenate());
                 }
@@ -134,6 +181,8 @@ namespace tekenprogramma
             {
                 tmp.Add(c.Copy());
             }
+            foreach (Ornament c in ornaments)
+                tmp.ornaments.Add(c.Copy());
             return tmp;
         }
 
@@ -156,11 +205,18 @@ namespace tekenprogramma
         //Save to file recursively
         public void Savetofile(DataWriter write, int depth)
         {
+            foreach(Ornament o in ornaments)
+            {
+                for (int c = 0; c < depth; c++)
+                {
+                    write.WriteString("\t");
+                }
+                write.WriteString("Ornament " + o.position.ToLower() + " \"" + o.ornament + "\"\n");
+            }
             for (int c = 0; c < depth; c++)
             {
                 write.WriteString("\t");
             }
-
             if (type == "Group")
             {
                 write.WriteString(type + " " + groupitems.Count + "\n");
@@ -178,6 +234,7 @@ namespace tekenprogramma
         //Load from file recursively
         public void Loadfromfile(List<string> lines)
         {
+            List<Ornament> newornaments = new List<Ornament>();
             while(lines.Count > 0)
             {
                 string currentline = "";
@@ -190,8 +247,11 @@ namespace tekenprogramma
                         currentline = currentline + c;
                 }
                 List<string> split = currentline.Split(' ').ToList();
-                MainPage.itemcount++;
-                Add(new Composite(MainPage.itemcount, split[0]));
+                if(split[0] != "Ornament")
+                {
+                    MainPage.itemcount++;
+                    Add(new Composite(MainPage.itemcount, split[0]));
+                }
                 int nexttabcount = 0;
                 if (lines.Count > 1)
                 {
@@ -203,12 +263,18 @@ namespace tekenprogramma
                 else
                     nexttabcount--;
                 lines.RemoveAt(0);
-                if(split[0] != "Group")
+                if(split[0] == "Ornament")
+                {
+                    split[2] = split[2].Replace("\"", "");
+                    newornaments.Add(new Ornament(split[2], split[1]));
+                }
+                if(split[0] != "Group" && split[0] != "Ornament")
                 {
                     groupitems[groupitems.Count - 1].x = Convert.ToDouble(split[1]);
                     groupitems[groupitems.Count - 1].y = Convert.ToDouble(split[2]);
                     groupitems[groupitems.Count - 1].width = Convert.ToDouble(split[3]);
                     groupitems[groupitems.Count - 1].height = Convert.ToDouble(split[4]);
+                    groupitems[groupitems.Count - 1].ornaments = newornaments;
                 }
                 if (nexttabcount > tabcount)
                 {

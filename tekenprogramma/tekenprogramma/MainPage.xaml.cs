@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Shapes;
 using System.Collections.Generic;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.Foundation;
 //using System.Drawing;
 
 namespace tekenprogramma
@@ -33,6 +34,7 @@ namespace tekenprogramma
         {
             //Initializing program and fills a few necessary variables
             InitializeComponent();
+            Focus(FocusState.Programmatic);
             buttoncolor = Move.Background;
             history.timeline.Add(new Snapshot(group.Copy(), itemcount));
             buttons.Add(Move);
@@ -176,6 +178,39 @@ namespace tekenprogramma
             }
         }
 
+        private void KeyPressed(object sender, KeyRoutedEventArgs e)
+        {
+            if(e.Key.ToString() == "Up" || e.Key.ToString() == "Down" || e.Key.ToString() == "Left" || e.Key.ToString() == "Right") {
+                string newposition = "Placeholder";
+                switch (e.Key.ToString())
+                {
+                    case "Up":
+                        newposition = "top";
+                        break;
+                    case "Down":
+                        newposition = "bottom";
+                        break;
+                    case "Left":
+                        newposition = "left";
+                        break;
+                    case "Right":
+                        newposition = "right";
+                        break;
+                }
+                foreach (int c in selected)
+                {
+                    Composite newcomposite = group.FindID(c);
+                    if (newcomposite.ornaments.Count > 0)
+                    {
+                        newcomposite.ornaments[newcomposite.ornaments.Count - 1].position = newposition;
+                        group.SetID(newcomposite, c);
+                    }
+                }
+                Update(true);
+                Update(false);
+            }
+        }
+
         //This button selects the move tool
         private void Move_Click(object sender, RoutedEventArgs e)
         {
@@ -259,6 +294,14 @@ namespace tekenprogramma
                 return last;
         }
 
+        public static double ReturnLargest(double first, double last)
+        {
+            if (first > last)
+                return first;
+            else
+                return last;
+        }
+
 
         //This changes the tool to an Ellipse
         private void Ellipse_Click(object sender, RoutedEventArgs e)
@@ -294,26 +337,84 @@ namespace tekenprogramma
                 List<Composite> tosurface = history.timeline[timeindex].composite.Concatenate();
                 foreach (Composite c in tosurface)
                 {
-                    Context context = new Context(DrawRectangle.getInstance());
-                    if(c.type == "Ellipse")
-                        context = new Context(DrawEllipse.getInstance());
-                    context.x = c.x;
-                    context.y = c.y;
-                    context.height = c.height;
-                    context.width = c.width;
-                    context.id = c.id;
-                    Shape shape = context.Draw();
-                    SolidColorBrush brush = new SolidColorBrush();
-                    if (IsSelected(c))
-                        brush.Color = Colors.DarkSlateGray;
+                    if (c.type != "Group")
+                    {
+                        Strategy strategy = DrawEllipse.getInstance();
+                        if (c.type == "Rectangle")
+                            strategy = DrawRectangle.getInstance();
+                        foreach (Ornament o in c.ornaments)
+                        {
+                            switch (o.position)
+                            {
+                                case "top":
+                                    strategy = new UpperOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                                case "bottom":
+                                    strategy = new LowerOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                                case "left":
+                                    strategy = new LeftOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                                case "right":
+                                    strategy = new RightOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                            }
+                        }
+                        DrawPackage drawpackage = new DrawPackage();
+                        drawpackage.x = c.x;
+                        drawpackage.y = c.y;
+                        drawpackage.height = c.height;
+                        drawpackage.width = c.width;
+                        drawpackage.id = c.id;
+                        drawpackage.paintSurface = paintSurface;
+                        Context context = new Context(strategy);
+                        context.drawpackage = drawpackage;
+                        Shape shape = context.Draw();
+                        SolidColorBrush brush = new SolidColorBrush();
+                        if (IsSelected(c))
+                            brush.Color = Colors.DarkSlateGray;
+                        else
+                            brush.Color = Colors.SlateGray;
+                        shape.Fill = brush;
+                        shape.PointerPressed += mouseDown;
+                        shape.PointerMoved += mouseMove;
+                        shape.PointerReleased += mouseUp;
+                        shape.PointerWheelChanged += mouseScroll;
+                        paintSurface.Children.Add(shape);
+                    }
                     else
-                        brush.Color = Colors.SlateGray;
-                    shape.Fill = brush;
-                    shape.PointerPressed += mouseDown;
-                    shape.PointerMoved += mouseMove;
-                    shape.PointerReleased += mouseUp;
-                    shape.PointerWheelChanged += mouseScroll;
-                    paintSurface.Children.Add(shape);
+                    {
+                        Strategy strategy = DrawEllipse.getInstance();
+                        foreach (Ornament o in c.ornaments)
+                        {
+                            switch (o.position)
+                            {
+                                case "top":
+                                    strategy = new UpperOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                                case "bottom":
+                                    strategy = new LowerOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                                case "left":
+                                    strategy = new LeftOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                                case "right":
+                                    strategy = new RightOrnamentDecorator(strategy, o.ornament);
+                                    break;
+                            }
+                        }
+                        DrawPackage drawpackage = new DrawPackage();
+                        XYXY xyxy = c.GetGroupXYHW();
+                        drawpackage.x = xyxy.sx;
+                        drawpackage.y = xyxy.sy;
+                        drawpackage.height = xyxy.ey - xyxy.sy;
+                        drawpackage.width = xyxy.ex - xyxy.sx;
+                        drawpackage.id = c.id;
+                        drawpackage.paintSurface = paintSurface;
+                        Context context = new Context(strategy);
+                        context.drawpackage = drawpackage;
+                        Shape shape = context.Draw();
+                    }
                 }
             }
         }
@@ -351,7 +452,17 @@ namespace tekenprogramma
         //Adds the ornament to the group or shape
         private void Ornament_Click(object sender, RoutedEventArgs e)
         {
-            
+            if(ROrnament.Text != null)
+            {
+                foreach(int c in selected)
+                {
+                    Composite ornamented = group.FindID(c);
+                    ornamented.ornaments.Add(new tekenprogramma.Ornament(ROrnament.Text, "top"));
+                    group.SetID(ornamented, c);
+                }
+                Update(true);
+                Update(false);
+            }
         }
 
         //Saves the current shapes and groups to a file

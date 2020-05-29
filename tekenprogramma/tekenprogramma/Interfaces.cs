@@ -23,6 +23,20 @@ namespace tekenprogramma
 
     public interface Strategy
     {
-        Shape DrawShape(double x, double y, double height, double width, int id);
+        Shape Draw(DrawPackage drawpackage);
+    }
+
+    public abstract class OrnamentDecorator : Strategy
+    {
+        public Strategy _strategy;
+        public string _ornament;
+
+        public OrnamentDecorator(Strategy strategy, string ornament)
+        {
+            _strategy = strategy;
+            _ornament = ornament;
+        }
+
+        public abstract Shape Draw(DrawPackage drawpackage);
     }
 }

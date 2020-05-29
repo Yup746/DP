@@ -21,16 +21,16 @@ namespace tekenprogramma
             return instance;
         }
 
-        public Shape DrawShape(double x, double y, double height, double width, int id)
+        public Shape Draw(DrawPackage drawpackage)
         {
             Ellipse ellipse = new Ellipse();
 
-            ellipse.Height = height;
-            ellipse.Width = width;
+            ellipse.Height = drawpackage.height;
+            ellipse.Width = drawpackage.width;
             ellipse.Name = "Ellipse";
-            ellipse.Tag = id;
-            Canvas.SetLeft(ellipse, x);
-            Canvas.SetTop(ellipse, y);
+            ellipse.Tag = drawpackage.id;
+            Canvas.SetLeft(ellipse, drawpackage.x);
+            Canvas.SetTop(ellipse, drawpackage.y);
             return ellipse;
         }
     }
@@ -46,16 +46,16 @@ namespace tekenprogramma
             return instance;
         }
 
-        public Shape DrawShape(double x, double y, double height, double width, int id)
+        public Shape Draw(DrawPackage drawpackage)
         {
             Rectangle rectangle = new Rectangle();
 
-            rectangle.Height = height;
-            rectangle.Width = width;
+            rectangle.Height = drawpackage.height;
+            rectangle.Width = drawpackage.width;
             rectangle.Name = "Rectangle";
-            rectangle.Tag = id;
-            Canvas.SetLeft(rectangle, x);
-            Canvas.SetTop(rectangle, y);
+            rectangle.Tag = drawpackage.id;
+            Canvas.SetLeft(rectangle, drawpackage.x);
+            Canvas.SetTop(rectangle, drawpackage.y);
             return rectangle;
         }
     }

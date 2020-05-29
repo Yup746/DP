@@ -11,8 +11,7 @@ namespace tekenprogramma
     class Context
     {
         private Strategy strategy;
-        public double x, y, height, width = 0;
-        public int id = 0;
+        public DrawPackage drawpackage = new DrawPackage();
 
         public Context(Strategy strategy)
         {
@@ -21,7 +20,7 @@ namespace tekenprogramma
 
         public Shape Draw()
         {
-            Shape shape = strategy.DrawShape(x, y, height, width, id);
+            Shape shape = strategy.Draw(drawpackage);
             return shape;
         }
     }
