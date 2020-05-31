@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Media;
 
 namespace tekenprogramma
 {
+    //Context class for strategy pattern
     class Context
     {
         private Strategy strategy;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace tekenprogramma
 {
+    //This class is used to find the start and end coordinates of a shape, to recursively find the size of a group
     public class XYXY
     {
         public double sx = 746746;

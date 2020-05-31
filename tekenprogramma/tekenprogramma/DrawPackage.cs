@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace tekenprogramma
 {
+    //DrawPackage class is used for ornament decorators or draw strategies, this stores all needed information for either
     public class DrawPackage
     {
         public double x, y, height, width;

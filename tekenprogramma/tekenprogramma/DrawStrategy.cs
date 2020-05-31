@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace tekenprogramma
 {
+    //Ellipse strategy
     class DrawEllipse : Strategy
     {
         private static DrawEllipse instance = new DrawEllipse();
@@ -35,6 +36,7 @@ namespace tekenprogramma
         }
     }
 
+    //Rectangle strategy
     class DrawRectangle : Strategy
     {
         private static DrawRectangle instance = new DrawRectangle();

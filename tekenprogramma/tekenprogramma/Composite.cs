@@ -10,6 +10,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace tekenprogramma
 {
+    //Composite class for composite pattern
     public class Composite
     {
         //Intializes variables
@@ -70,6 +71,7 @@ namespace tekenprogramma
             return new Composite(746, "Placeholder");
         }
 
+        //Gets the most upperleft and bottomright coordinates of shapes in a group recursively
         public XYXY GetGroupXYHW()
         {
             XYXY xyhw = new XYXY();

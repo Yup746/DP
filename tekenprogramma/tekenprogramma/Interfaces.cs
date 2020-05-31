@@ -21,11 +21,13 @@ namespace tekenprogramma
         void visit(Composite composite);
     }
 
+    //Strategy interface
     public interface Strategy
     {
         Shape Draw(DrawPackage drawpackage);
     }
 
+    //Abstract decorator class
     public abstract class OrnamentDecorator : Strategy
     {
         public Strategy _strategy;

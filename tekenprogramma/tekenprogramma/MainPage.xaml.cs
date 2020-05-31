@@ -178,6 +178,7 @@ namespace tekenprogramma
             }
         }
 
+        //This places the last added ornament of all selected composites at the position of the arrow key pressed
         private void KeyPressed(object sender, KeyRoutedEventArgs e)
         {
             if(e.Key.ToString() == "Up" || e.Key.ToString() == "Down" || e.Key.ToString() == "Left" || e.Key.ToString() == "Right") {
@@ -285,7 +286,7 @@ namespace tekenprogramma
             }
         }
 
-        //This returns the smalles double from the 2 inputs
+        //This returns the smallest double from the 2 inputs
         public static double ReturnSmallest(double first, double last)
         {
             if(first < last)
@@ -294,6 +295,7 @@ namespace tekenprogramma
                 return last;
         }
 
+        //This returns the largest double from the 2 inputs
         public static double ReturnLargest(double first, double last)
         {
             if (first > last)

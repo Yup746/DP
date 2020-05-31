@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace tekenprogramma
 {
+    //An ornament class containing the string and position
     public class Ornament
     {
         public string ornament, position;

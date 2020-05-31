@@ -9,6 +9,7 @@ using Windows.Foundation;
 
 namespace tekenprogramma
 {
+    //A concrete decorator class for placing an ornament on top of a shape or group
     public class UpperOrnamentDecorator : OrnamentDecorator
     {
         public UpperOrnamentDecorator(Strategy strategy, string ornament) : base(strategy, ornament) { }
@@ -27,6 +28,7 @@ namespace tekenprogramma
         }
     }
 
+    //A concrete decorator class for placing an ornament below a shape or group
     public class LowerOrnamentDecorator : OrnamentDecorator
     {
         public LowerOrnamentDecorator(Strategy strategy, string ornament) : base(strategy, ornament) { }
@@ -45,6 +47,7 @@ namespace tekenprogramma
         }
     }
 
+    //A concrete decorator class for placing an ornament to the left of a shape or group
     public class LeftOrnamentDecorator : OrnamentDecorator
     {
         public LeftOrnamentDecorator(Strategy strategy, string ornament) : base(strategy, ornament) { }
@@ -63,6 +66,7 @@ namespace tekenprogramma
         }
     }
 
+    //A concrete decorator class for placing an ornament to the right of a shape or group
     public class RightOrnamentDecorator : OrnamentDecorator
     {
         public RightOrnamentDecorator(Strategy strategy, string ornament) : base(strategy, ornament) { }
